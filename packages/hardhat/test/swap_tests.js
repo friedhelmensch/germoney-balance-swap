@@ -5,7 +5,9 @@ const { solidity } = require("ethereum-waffle");
 use(solidity);
 
 describe("Germoney-Balance-Swap", function () {
-  let swapContract;
+  let swap;
+  let germoney;
+  let balance;
 
   // quick fix to let gas reporter fetch data from gas station & coinmarketcap
   before((done) => {
@@ -14,25 +16,18 @@ describe("Germoney-Balance-Swap", function () {
 
   describe("Swap", function () {
     it("Should deploy Swap", async function () {
-      const Swap = await ethers.getContractFactory("Swap");
-
-      const germoney = await (
-        await ethers.getContractFactory("Germoney")
-      ).deploy();
-
-      const balance = await (
-        await ethers.getContractFactory("Balance")
-      ).deploy();
-
-      swapContract = await Swap.deploy(germoney.address, balance.address);
+      germoney = await (await ethers.getContractFactory("Germoney")).deploy();
+      balance = await (await ethers.getContractFactory("Balance")).deploy();
+      swap = await (
+        await ethers.getContractFactory("Swap")
+      ).deploy(germoney.address, balance.address);
     });
 
-    describe("setPurpose()", function () {
-      it("Should be able to set a new purpose", async function () {
-        const newPurpose = "Test Purpose";
-
-        await swapContract.swap(newPurpose);
-        expect(await swapContract.purpose()).to.equal(newPurpose);
+    describe("send Balance to swap ", function () {
+      it("should have Balance tokens", async function () {
+        await balance.transfer(swap.address, 50);
+        const swapBalanceTokens = await balance.balanceOf(swap.address);
+        expect(swapBalanceTokens).to.equal(50);
       });
 
       // Uncomment the event and emit lines in YourContract.sol to make this test pass
