@@ -10,7 +10,7 @@ contract Germoney is IERC20 {
 
     mapping(address => mapping(address => uint256)) allowed;
 
-    uint256 totalSupply_ = 100 ether;
+    uint256 totalSupply_ = 100;
 
     using SafeMath for uint256;
 

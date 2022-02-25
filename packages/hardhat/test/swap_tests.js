@@ -23,11 +23,21 @@ describe("Germoney-Balance-Swap", function () {
       ).deploy(germoney.address, balance.address);
     });
 
-    describe("send Balance to swap ", function () {
-      it("should have Balance tokens", async function () {
+    describe("swap", function () {
+      it("should send balance to swapper", async function () {
         await balance.transfer(swap.address, 50);
+
         const swapBalanceTokens = await balance.balanceOf(swap.address);
         expect(swapBalanceTokens).to.equal(50);
+
+        const [owner] = await ethers.getSigners();
+        const balanceTokens = await balance.balanceOf(owner.address);
+        expect(balanceTokens).to.equal(50);
+
+        await swap.swap(50);
+
+        const balanceTokensAfterSwap = await balance.balanceOf(owner.address);
+        expect(balanceTokensAfterSwap).to.equal(100);
       });
 
       // Uncomment the event and emit lines in YourContract.sol to make this test pass

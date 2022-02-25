@@ -8,7 +8,38 @@ contract Swap {
 
     using SafeMath for uint256;
 
-    constructor(address germoney, address balance) {}
+    IERC20 public germoney;
+    IERC20 public balance;
+
+    constructor(address germoneyAddress, address balanceAddress) {
+        germoney = IERC20(germoneyAddress);
+        balance = IERC20(balanceAddress);
+    }
+
+    function swap(uint256 amount) public returns (bool) {
+        balance.transfer(msg.sender, amount);
+        return true;
+    }
+
+    function uint2str(uint256 _i) internal pure returns (string memory str) {
+        if (_i == 0) {
+            return "0";
+        }
+        uint256 j = _i;
+        uint256 length;
+        while (j != 0) {
+            length++;
+            j /= 10;
+        }
+        bytes memory bstr = new bytes(length);
+        uint256 k = length;
+        j = _i;
+        while (j != 0) {
+            bstr[--k] = bytes1(uint8(48 + (j % 10)));
+            j /= 10;
+        }
+        str = string(bstr);
+    }
 }
 
 library SafeMath {
