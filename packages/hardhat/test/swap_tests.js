@@ -25,20 +25,31 @@ describe("Germoney-Balance-Swap", function () {
 
     describe("swap", function () {
       it("should send balance to swapper", async function () {
-        await balance.transfer(swap.address, 50);
-        const swapBalanceTokens = await balance.balanceOf(swap.address);
-        expect(swapBalanceTokens).to.equal(50);
+        const [owner, alice, bob] = await ethers.getSigners();
 
-        const [owner] = await ethers.getSigners();
-        const ownerBalanceTokens = await balance.balanceOf(owner.address);
-        expect(ownerBalanceTokens).to.equal(50);
+        await balance.transfer(swap.address, 100);
+        await germoney.transfer(alice.address, 100);
 
+        const aliceBalanceTokens = await balance.balanceOf(alice.address);
+        expect(aliceBalanceTokens).to.equal(0);
+
+        const aliceGermoneyTokens = await germoney.balanceOf(alice.address);
+        expect(aliceGermoneyTokens).to.equal(100);
+
+        germoney = germoney.connect(alice);
+        germoney.approve(swap.address, 50);
+        swap = swap.connect(alice);
         await swap.swap(50);
 
-        const ownerBalanceTokensAfterSwap = await balance.balanceOf(
-          owner.address
+        const aliceBalanceTokensAfterSwap = await balance.balanceOf(
+          alice.address
         );
-        expect(ownerBalanceTokensAfterSwap).to.equal(100);
+        expect(aliceBalanceTokensAfterSwap).to.equal(50);
+
+        const aliceGermoneyTokensAfterSwap = await germoney.balanceOf(
+          alice.address
+        );
+        expect(aliceGermoneyTokensAfterSwap).to.equal(50);
       });
 
       // Uncomment the event and emit lines in YourContract.sol to make this test pass

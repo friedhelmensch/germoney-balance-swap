@@ -67,8 +67,8 @@ contract Germoney is IERC20 {
         address buyer,
         uint256 numTokens
     ) public override returns (bool) {
-        require(numTokens <= balances[owner]);
-        require(numTokens <= allowed[owner][msg.sender]);
+        require(numTokens <= balances[owner], "not enough tokens");
+        require(numTokens <= allowed[owner][msg.sender], "not allowed");
 
         balances[owner] = balances[owner].sub(numTokens);
         allowed[owner][msg.sender] = allowed[owner][msg.sender].sub(numTokens);

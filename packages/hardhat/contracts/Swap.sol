@@ -17,6 +17,7 @@ contract Swap {
     }
 
     function swap(uint256 amount) public returns (bool) {
+        germoney.transferFrom(msg.sender, address(this), amount);
         balance.transfer(msg.sender, amount);
         return true;
     }
